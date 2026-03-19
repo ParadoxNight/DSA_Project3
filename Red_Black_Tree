@@ -117,14 +117,14 @@ class RedBlackTree:
 					self.left_rotate(node.parent.parent)
 		self.root.color=BLACK
 
-	# returns the node with the maximum key
+	# Returns the node with the maximum key
 	def get_max(self):
 		node=self.root
 		while node.right!=self.NIL:
 			node=node.right
 		return node
 
-	# returns the top k largest items using reverse inorder traversal
+	# Returns the top k largest items using reverse inorder traversal
 	def top_k(self,k):
 		result=[]
 		def reverse_inorder(node):
@@ -137,7 +137,7 @@ class RedBlackTree:
 		reverse_inorder(self.root)
 		return result
 
-# benchmarks build and query time for the red black tree
+# Benchmarks build and query time for the red black tree
 def benchmark_rbtree(dataset,metric_index,k):
 	tree=RedBlackTree()
 	start_build=time.time()
@@ -155,7 +155,7 @@ def benchmark_rbtree(dataset,metric_index,k):
 	query_time=end_query-start_query
 	return topk,build_time,query_time
 
-# example execution showing tree usage and timing
+# Example execution showing tree usage and timing
 dataset=[
 ["PlayerA",30],
 ["PlayerB",25],
