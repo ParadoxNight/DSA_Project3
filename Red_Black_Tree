@@ -1,8 +1,10 @@
 import time
 
+# Represent node colors for balancing
 RED="RED"
 BLACK="BLACK"
 
+# Node structure and pointers
 class RBNode:
 	def __init__(self,key,data):
 		self.key=key
@@ -18,7 +20,7 @@ class RedBlackTree:
 		self.NIL.color=BLACK
 		self.root=self.NIL
 
-	# performs left rotation around a node
+	# Performs left rotation around a node
 	def left_rotate(self,x):
 		y=x.right
 		x.right=y.left
@@ -37,7 +39,7 @@ class RedBlackTree:
 		y.left=x
 		x.parent=y
 
-	# performs right rotation around a node
+	# Performs right rotation around a node
 	def right_rotate(self,y):
 		x=y.left
 		y.left=x.right
@@ -87,34 +89,42 @@ class RedBlackTree:
 	# Restores red black properties after insertion
 	def insert_fix(self,node):
 		while node.parent and node.parent.color==RED:
+			# Parent is the left child of grandparent
 			if node.parent==node.parent.parent.left:
 				uncle=node.parent.parent.right
+				# Case 1: Uncle is Red
 				if uncle.color==RED:
 					node.parent.color=BLACK
 					uncle.color=BLACK
 					node.parent.parent.color=RED
 					node=node.parent.parent
 				else:
+					# Case 2: Node is right child and is forming triangle, rotate
 					if node==node.parent.right:
 						node=node.parent
 						self.left_rotate(node)
+					# Case 3: Node is left child and froms line, rotate grandparent
 					node.parent.color=BLACK
 					node.parent.parent.color=RED
 					self.right_rotate(node.parent.parent)
 			else:
 				uncle=node.parent.parent.left
+				# Case 1: Uncle is Red
 				if uncle.color==RED:
 					node.parent.color=BLACK
 					uncle.color=BLACK
 					node.parent.parent.color=RED
 					node=node.parent.parent
 				else:
+					# Case 2: Node is left child and is forming triangle, rotate
 					if node==node.parent.left:
 						node=node.parent
 						self.right_rotate(node)
+					# Case 3: Node is right child and froms line, rotate grandparent
 					node.parent.color=BLACK
 					node.parent.parent.color=RED
 					self.left_rotate(node.parent.parent)
+		# Root must be Black
 		self.root.color=BLACK
 
 	# Returns the node with the maximum key
@@ -128,11 +138,15 @@ class RedBlackTree:
 	def top_k(self,k):
 		result=[]
 		def reverse_inorder(node):
+			# Stop if subtree empty or k results collected
 			if node==self.NIL or len(result)>=k:
 				return
+			# Go to larger values
 			reverse_inorder(node.right)
+			# Log current value
 			if len(result)<k:
 				result.append(node.data)
+			# Go to smaller values
 			reverse_inorder(node.left)
 		reverse_inorder(self.root)
 		return result
