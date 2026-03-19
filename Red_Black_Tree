@@ -18,70 +18,73 @@ class RedBlackTree:
 		self.NIL.color=BLACK
 		self.root=self.NIL
 
-	# Performs left rotation around a node
+	# performs left rotation around a node
 	def left_rotate(self,x):
 		y=x.right
 		x.right=y.left
 		
-    if y.left!=self.NIL:
+		if y.left!=self.NIL:
 			y.left.parent=x
+		y.parent=x.parent
 		
-    y.parent=x.parent
-		
-    if x.parent is None:
+		if x.parent is None:
 			self.root=y
 		elif x==x.parent.left:
 			x.parent.left=y
 		else:
 			x.parent.right=y
 		
-    y.left=x
+		y.left=x
 		x.parent=y
 
-	# Performs right rotation around a node
+	# performs right rotation around a node
 	def right_rotate(self,y):
 		x=y.left
 		y.left=x.right
 		
-    if x.right!=self.NIL:
+		if x.right!=self.NIL:
 			x.right.parent=y
 		
-    x.parent=y.parent
+		x.parent=y.parent
 		
-    if y.parent is None:
+		if y.parent is None:
 			self.root=x
 		elif y==y.parent.right:
 			y.parent.right=x
 		else:
 			y.parent.left=x
 		
-    x.right=y
+		x.right=y
 		y.parent=x
 
-	# inserts a node into the red black tree
+	# Inserts a node into the red black tree
 	def insert(self,key,data):
 		node=RBNode(key,data)
 		node.left=self.NIL
 		node.right=self.NIL
 		parent=None
 		current=self.root
+		
 		while current!=self.NIL:
 			parent=current
 			if node.key<current.key:
 				current=current.left
 			else:
 				current=current.right
+		
 		node.parent=parent
+		
 		if parent is None:
 			self.root=node
 		elif node.key<parent.key:
 			parent.left=node
 		else:
 			parent.right=node
+		
 		node.color=RED
 		self.insert_fix(node)
 
-	# restores red black properties after insertion
+	# Restores red black properties after insertion
 	def insert_fix(self,node):
 		while node.parent and node.parent.color==RED:
 			if node.parent==node.parent.parent.left:
