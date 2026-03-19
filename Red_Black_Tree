@@ -1,0 +1,174 @@
+import time
+
+RED="RED"
+BLACK="BLACK"
+
+class RBNode:
+	def __init__(self,key,data):
+		self.key=key
+		self.data=data
+		self.color=RED
+		self.left=None
+		self.right=None
+		self.parent=None
+
+class RedBlackTree:
+	def __init__(self):
+		self.NIL=RBNode(None,None)
+		self.NIL.color=BLACK
+		self.root=self.NIL
+
+	# Performs left rotation around a node
+	def left_rotate(self,x):
+		y=x.right
+		x.right=y.left
+		
+    if y.left!=self.NIL:
+			y.left.parent=x
+		
+    y.parent=x.parent
+		
+    if x.parent is None:
+			self.root=y
+		elif x==x.parent.left:
+			x.parent.left=y
+		else:
+			x.parent.right=y
+		
+    y.left=x
+		x.parent=y
+
+	# Performs right rotation around a node
+	def right_rotate(self,y):
+		x=y.left
+		y.left=x.right
+		
+    if x.right!=self.NIL:
+			x.right.parent=y
+		
+    x.parent=y.parent
+		
+    if y.parent is None:
+			self.root=x
+		elif y==y.parent.right:
+			y.parent.right=x
+		else:
+			y.parent.left=x
+		
+    x.right=y
+		y.parent=x
+
+	# inserts a node into the red black tree
+	def insert(self,key,data):
+		node=RBNode(key,data)
+		node.left=self.NIL
+		node.right=self.NIL
+		parent=None
+		current=self.root
+		while current!=self.NIL:
+			parent=current
+			if node.key<current.key:
+				current=current.left
+			else:
+				current=current.right
+		node.parent=parent
+		if parent is None:
+			self.root=node
+		elif node.key<parent.key:
+			parent.left=node
+		else:
+			parent.right=node
+		node.color=RED
+		self.insert_fix(node)
+
+	# restores red black properties after insertion
+	def insert_fix(self,node):
+		while node.parent and node.parent.color==RED:
+			if node.parent==node.parent.parent.left:
+				uncle=node.parent.parent.right
+				if uncle.color==RED:
+					node.parent.color=BLACK
+					uncle.color=BLACK
+					node.parent.parent.color=RED
+					node=node.parent.parent
+				else:
+					if node==node.parent.right:
+						node=node.parent
+						self.left_rotate(node)
+					node.parent.color=BLACK
+					node.parent.parent.color=RED
+					self.right_rotate(node.parent.parent)
+			else:
+				uncle=node.parent.parent.left
+				if uncle.color==RED:
+					node.parent.color=BLACK
+					uncle.color=BLACK
+					node.parent.parent.color=RED
+					node=node.parent.parent
+				else:
+					if node==node.parent.left:
+						node=node.parent
+						self.right_rotate(node)
+					node.parent.color=BLACK
+					node.parent.parent.color=RED
+					self.left_rotate(node.parent.parent)
+		self.root.color=BLACK
+
+	# returns the node with the maximum key
+	def get_max(self):
+		node=self.root
+		while node.right!=self.NIL:
+			node=node.right
+		return node
+
+	# returns the top k largest items using reverse inorder traversal
+	def top_k(self,k):
+		result=[]
+		def reverse_inorder(node):
+			if node==self.NIL or len(result)>=k:
+				return
+			reverse_inorder(node.right)
+			if len(result)<k:
+				result.append(node.data)
+			reverse_inorder(node.left)
+		reverse_inorder(self.root)
+		return result
+
+# benchmarks build and query time for the red black tree
+def benchmark_rbtree(dataset,metric_index,k):
+	tree=RedBlackTree()
+	start_build=time.time()
+	unique_id=0
+	for row in dataset:
+		score=float(row[metric_index])
+		key=(score,unique_id)
+		tree.insert(key,row)
+		unique_id+=1
+	end_build=time.time()
+	start_query=time.time()
+	topk=tree.top_k(k)
+	end_query=time.time()
+	build_time=end_build-start_build
+	query_time=end_query-start_query
+	return topk,build_time,query_time
+
+# example execution showing tree usage and timing
+dataset=[
+["PlayerA",30],
+["PlayerB",25],
+["PlayerC",42],
+["PlayerD",15],
+["PlayerE",38]
+]
+
+metric_index=1
+k=3
+
+topk,build,query=benchmark_rbtree(dataset,metric_index,k)
+
+print("Top K Results:")
+for row in topk:
+	print(row)
+
+print("Build Time:",build)
+print("Query Time:",query)
