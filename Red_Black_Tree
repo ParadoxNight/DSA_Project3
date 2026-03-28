@@ -197,5 +197,5 @@ def benchmark_rbtree(dataset, metric_index, k):
     topk = tree.top_k(k)
     end_query = time.time()
 
-    # Build = O(N log N), query = O(K + log N)
+    # Build = O(N log N), Query = O(K + log N)
     return topk, end_build - start_build, end_query - start_query
