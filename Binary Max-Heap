@@ -1,0 +1,118 @@
+import time
+
+class MaxHeap:
+    # Underlying array
+    def __init__(self):
+        self.heap = []
+
+    # Some helper index functions
+    def parent(self, i):
+        return (i - 1) // 2
+
+    def left(self, i):
+        return 2 * i + 1
+
+    def right(self, i):
+        return 2 * i + 2
+
+    def swap(self, i, j):
+        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
+
+    # Insertions
+    def insert(self, item):
+        # Insert at end then bubble up
+        # Time = O(log N)
+        self.heap.append(item)
+        self.heapify_up(len(self.heap) - 1)
+
+    def heapify_up(self, i):
+        # Move the element up until heap property fixed
+        while i > 0 and self.heap[self.parent(i)][0] < self.heap[i][0]:
+            self.swap(i, self.parent(i))
+            i = self.parent(i)
+
+    # Hepifying DOWN
+    def heapify_down(self, i):
+        # Push the element down to the correct spot
+        largest = i
+        left = self.left(i)
+        right = self.right(i)
+
+        if left < len(self.heap) and self.heap[left][0] > self.heap[largest][0]:
+            largest = left
+
+        if right < len(self.heap) and self.heap[right][0] > self.heap[largest][0]:
+            largest = right
+
+        if largest != i:
+            self.swap(i, largest)
+            self.heapify_down(largest)
+
+    # Extracting the Minimum
+    def extract_max(self):
+        # Remove root (max element)
+        # Time = O(log N)
+
+        if len(self.heap) == 0:
+            return None
+
+        if len(self.heap) == 1:
+            return self.heap.pop()
+
+        root = self.heap[0]
+        self.heap[0] = self.heap.pop()
+        self.heapify_down(0)
+
+        return root
+
+    # Building the heap
+    def build_heap(self, array):
+        # Build heap in O(N)
+        self.heap = array[:]
+
+        # Start from last non-leaf
+        for i in range(len(self.heap) // 2 - 1, -1, -1):
+            self.heapify_down(i)
+
+    # Top K values
+    def top_k(self, k):
+        # Extract the k largest elements
+        # Total = O(K log N)
+
+        result = []
+
+        # Copy heap so we don't destroy original
+        temp = MaxHeap()
+        temp.build_heap(self.heap)
+
+        # Returning row
+        for _ in range(min(k, len(self.heap))):
+            result.append(temp.extract_max()[2])
+
+        return result
+
+
+# Benchmark
+def benchmark_heap(dataset, metric_index, k):
+    heap = MaxHeap()
+
+    start_build = time.time()
+
+    array = []
+    unique_id = 0
+
+    for row in dataset:
+        score = float(row[metric_index])
+        array.append((score, unique_id, row))
+        unique_id += 1
+
+    heap.build_heap(array)
+
+    end_build = time.time()
+
+    start_query = time.time()
+    topk = heap.top_k(k)
+    end_query = time.time()
+
+    # Build = O(N), Query = O(K log N)
+    return topk, end_build - start_build, end_query - start_query
