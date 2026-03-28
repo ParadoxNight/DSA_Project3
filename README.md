@@ -197,3 +197,22 @@ These sites are specifically referred to in the rest of the documentation provid
 #### Bonus Documentation
 - [Planning and Tracking Your Project](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
 - [Undo changes, commits, pushes, etc.](https://sethrobertson.github.io/GitFixUm/fixup.html)
+
+
+## How to run code
+- Download all code and set up in either ide or navigate to directory through command line
+- Run main.py (must use python3.12 or 3.11 for tkinter support for the GUI)
+- While window is open navigate to dataset (video demonstration include in archive directory within project directory)
+- Recommended directory structure:
+- 	main.py
+- 	models.py
+- 	rbtree_ds.py
+- 	visualizer.py
+- 	heap_ds.py
+- 	benchmark.py
+- 	app.py
+- 	aggregator.py
+- 	Red_Black_Tree
+- 	Binary Max-Heap
+- 	archive/
+- 		PlayerStatistics.csv
